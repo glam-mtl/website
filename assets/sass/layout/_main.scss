@@ -211,8 +211,12 @@
 				}
 
 				&.left {
-					@include vendor('justify-content', 'center');
-					text-align: center;
+					// @include vendor('justify-content', 'center');
+					// text-align: center;
+					.inner {
+						padding-left: 6em;
+					}
+
 				}
 
 				&.center {
@@ -221,8 +225,11 @@
 				}
 
 				&.right {
-					@include vendor('justify-content', 'center');
-					text-align: center;
+					// @include vendor('justify-content', 'center');
+					// text-align: center;
+					.inner {
+						padding-right: 6em;
+					}
 				}
 			}
 
