@@ -41,7 +41,7 @@ layout: default
 
 				{% for slide in site.reel %}
 
-					<article id="{{ slide.html_id }}" class="slide {{ slide.class }}">
+					<article data-id="{{ slide.html_id }}" class="slide {{ slide.class }}">
 						<img src="{{ site.baseurl }}{{ slide.image }}" alt="" data-position="{{ slide.position }}" />
 						<div class="inner">
 							{{ slide.output }}

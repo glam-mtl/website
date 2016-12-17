@@ -68,44 +68,55 @@ $(function() {
 				$next = $controls.children('.next'),
 				$previous = $controls.children('.previous'),
 				pos = null,
+				scrolledPos = null,
 				locked = false;
 
 			// Switch function.
 				$(window).on('hashchange', function() {
 					var h = location.hash || '#';
-					var $slide = $slides.filter('[id="' + h.substr(1) + '"]')
+					var $slide = $slides.filter('[data-id="' + h.substr(1) + '"]')
 					var newPos = $slide.data('index') || 0;
 					activateSlide(newPos);
 				});
 
 				var switchTo = function(newPos) {
-					location.hash = $slides.eq(newPos).attr('id');
+					location.hash = $slides.eq(newPos).attr('data-id');
 				};
 
+				var left = function() {
+					return $slides.width() * pos;
+				};
+
+				var jumpToSlide = function() {
+					console.log('jump', left())
+					$main.scrollLeft(left())
+				};
+
+				var scrollToSlide = function() {
+					console.log('anim', left())
+					locked = true;
+					$main.animate({
+						scrollLeft: left()
+					}, settings.speed, 'swing', function() {
+						locked = false;
+						// Check if position is in sync with currently scrolled slide
+						if (pos !== scrolledPos) { // If not, activate it
+							activateSlide(pos);
+						}
+					});
+				};
+
+				var selectSlide = jumpToSlide;
+
 				var activateSlide = function(newPos) {
-
-					var $slide, $navItem, left;
-
-					var instant = (pos === null) || (pos === newPos);
 
 					// Out of bounds? Bail.
 						if (newPos < 0
 						||	newPos >= $slides.length)
 							return;
 
-					// Deal with lock.
-						if (instant !== true) {
-
-							if (locked)
-								return;
-
-							locked = true;
-
-						}
-
 					// Update position.
 						pos = newPos;
-						left = $slides.width() * pos;
 
 					// Update nav.
 
@@ -114,21 +125,7 @@ $(function() {
 								.removeClass('active');
 
 						// Get new item and activate it.
-							$navItem = $navItems.eq(pos);
-
-							$navItem
-								.addClass('active');
-
-					// Update slides.
-
-						// Clear active state.
-							$slides
-								.removeClass('active');
-
-						// Get new slide and activate it.
-							$slide = $slides.eq(pos);
-
-							$slide
+							$navItems.eq(pos)
 								.addClass('active');
 
 					// Update controls.
@@ -145,20 +142,24 @@ $(function() {
 							else
 								$next.removeClass('disabled');
 
-					// Not instant? Animate to new scroll position.
-						if (instant !== true) {
+					// Deal with lock.
+						if (locked)
+							return;
 
-							$main.animate({
-								scrollLeft: left
-							}, settings.speed, 'swing', function() {
-								locked = false;
-							});
+					// Start scrolling slide into view.
+						scrolledPos = pos;
 
-						}
+					// Update slides.
 
-					// Otherwise, jump straight to new scroll position.
-						else
-							$main.scrollLeft(left);
+						// Clear active state.
+							$slides
+								.removeClass('active');
+
+						// Get new slide and activate it.
+							$slides.eq(pos)
+								.addClass('active');
+
+						selectSlide();
 
 				};
 
@@ -171,7 +172,7 @@ $(function() {
 
 					var $this = $(this),
 						$img = $this.children('img'),
-						id = $this.attr('id'),
+						id = $this.attr('data-id'),
 						position = $img.data('position'),
 						bg = {
 							image: $this.css('background-image'),
@@ -309,17 +310,13 @@ $(function() {
 
 					})
 					.on('resize orientationchange', function() {
-						setTimeout(function() {
-
-							// Switch.
-								activateSlide(pos);
-
-						}, 0);
+						setTimeout(jumpToSlide, 0);
 					})
 					.on('load', function() {
 						setTimeout(function() {
-							$window.triggerHandler('resize')
+							$window.triggerHandler('resize');
 							$window.triggerHandler('hashchange');
+							selectSlide = scrollToSlide;
 						}, 0);
 					});
 
