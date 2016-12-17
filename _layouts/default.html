@@ -15,11 +15,19 @@
 		{{ content }}
 
 		<!-- Scripts -->
+			<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-89121644-1', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'urlChangeTracker');
+ga('send', 'pageview');
+			</script>
 			<script src="{{ site.baseurl }}/assets/js/jquery.min.js"></script>
 			<script src="{{ site.baseurl }}/assets/js/skel.min.js"></script>
 			<script src="{{ site.baseurl }}/assets/js/util.js"></script>
 			<!--[if lte IE 8]><script src="{{ site.baseurl }}/assets/js/ie/respond.min.js"></script><![endif]-->
 			<script src="{{ site.baseurl }}/assets/js/main.js"></script>
-
+			<script async src='https://www.google-analytics.com/analytics.js'></script>
+			<script async src='{{ site.baseurl }}/assets/js/autotrack.js'></script>
 	</body>
 </html>
