@@ -1,0 +1,16 @@
+# Site settings
+title: Glam Mtl
+description: > # this means to ignore newlines until "baseurl:"
+  Presentation on G-Spot, female ejaculation and squirting
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "http://glam-mtl.com" # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+sass:
+  sass_dir: assets/sass
+
+# Collections
+# Add new slides as HTML files inside the _reel folder
+collections:
+  - reel
