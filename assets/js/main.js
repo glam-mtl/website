@@ -67,13 +67,26 @@ $(function() {
 				$controls = $('<nav><span class="previous"></span><span class="next"></span></nav>').appendTo($main),
 				$next = $controls.children('.next'),
 				$previous = $controls.children('.previous'),
-				pos = 0,
+				pos = null,
 				locked = false;
 
 			// Switch function.
-				var switchTo = function(newPos, instant) {
+				$(window).on('hashchange', function() {
+					var h = location.hash || '#';
+					var $slide = $slides.filter('[id="' + h.substr(1) + '"]')
+					var newPos = $slide.data('index') || 0;
+					activateSlide(newPos);
+				});
+
+				var switchTo = function(newPos) {
+					location.hash = $slides.eq(newPos).attr('id');
+				};
+
+				var activateSlide = function(newPos) {
 
 					var $slide, $navItem, left;
+
+					var instant = (pos === null) || (pos === newPos);
 
 					// Out of bounds? Bail.
 						if (newPos < 0
@@ -117,9 +130,6 @@ $(function() {
 
 							$slide
 								.addClass('active');
-
-					// Update hash.
-						history.replaceState(null, null, (pos == 0 ? '#' : '#' + $slide.attr('id')));
 
 					// Update controls.
 
@@ -206,16 +216,6 @@ $(function() {
 
 						// Hide <img>.
 							$img.hide();
-
-					// Links.
-						$body.on('click', 'a[href="#' + id + '"]', function(event) {
-
-							event.preventDefault();
-							event.stopPropagation();
-
-							switchTo($this.index());
-
-						});
 
 					// Parallax.
 						if (settings.parallax)
@@ -312,28 +312,14 @@ $(function() {
 						setTimeout(function() {
 
 							// Switch.
-								switchTo(pos, true);
+								activateSlide(pos);
 
 						}, 0);
 					})
 					.on('load', function() {
 						setTimeout(function() {
-
-							var h, $slide;
-
-							// Trigger resize.
-								$window.triggerHandler('resize');
-
-							// Get initial slide.
-								h = location.hash;
-
-								if (h
-								&&	($slide = $slides.filter('[id="' + h.substr(1) + '"]')).length > 0)
-									pos = $slide.data('index');
-
-							// Switch.
-								switchTo(pos, true);
-
+							$window.triggerHandler('resize')
+							$window.triggerHandler('hashchange');
 						}, 0);
 					});
 
